@@ -17,7 +17,7 @@ namespace Lab3
             public List<string[]> ResultWri;
             //список проверки массивов читателей
             public List<List<string>> ResultRea;
-            public Message(int n)
+            public Message(int n, bool bEmpty, bool finish)
             {
                 this.n = n;
                 this.bEmpty = true;
@@ -112,6 +112,10 @@ namespace Lab3
             varAccess.SetFinish(true);//завершаем работу читателей
             for (int i = 0; i < R; i++)
                 Readers[i].Join();
+            ShowMessages(varAccess);
+        }
+        static void ShowMessages(Message varAccess)
+        {
             int cnt = 0;
             for (int i = 0; i < varAccess.ResultWri.Count; i++)
             {
@@ -129,7 +133,7 @@ namespace Lab3
         }
         static void Main()
         {
-            Message freeAccess = new Message(1000);
+            Message freeAccess = new Message(1000, true, false);
             DateTime dt1, dt2;
             dt1 = DateTime.Now;
             ReadWriteAccess(freeAccess);
