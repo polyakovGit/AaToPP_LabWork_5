@@ -13,12 +13,18 @@ namespace Lab3
             bool bEmpty;
             bool finish;
             string buffer;
+            //список проверки массивов писателей
+            public List<string[]> ResultWri;
+            //список проверки массивов читателей
+            public List<List<string>> ResultRea;
             public Message(int n, bool bEmpty, bool finish)
             {
                 this.n = n;
                 this.bEmpty = bEmpty;
                 this.finish = finish;
                 buffer = null;
+                ResultWri = new List<string[]>();
+                ResultRea = new List<List<string>>();
             }
             public void SetFinish(bool value)
             {
@@ -33,15 +39,14 @@ namespace Lab3
                         MyMessagesRead.Add(buffer);
                         bEmpty = true;
                     }
-                //заносим в статический список, чтобы проверить содержимое
-                //       ResultRea.Add(MyMessagesRead);
+                ResultRea.Add(MyMessagesRead);
             }
             public void Write()
             {
                 string[] MyMessagesWri = new string[n];//локальный массив писателя
                 for (int j = 0; j < n; j++)
-                    MyMessagesWri[j] = j.ToString();
-                // MyMessagesWri[j] = "Thread WRI #" + Thread.CurrentThread.Name + ", Message: " + j.ToString();//заменить
+                    //MyMessagesWri[j] = j.ToString();
+                MyMessagesWri[j] = "Thread WRI #" + Thread.CurrentThread.Name + ", Message: " + j.ToString();
                 int i = 0;
                 while (i < n)
                     if (bEmpty)
@@ -49,58 +54,50 @@ namespace Lab3
                         buffer = MyMessagesWri[i++];
                         bEmpty = false;
                     }
-                //заносим в статический список, чтобы проверить содержимое
-                //     ResultWri.Add(MyMessagesWri);
+                ResultWri.Add(MyMessagesWri);
             }
         }
-
-        //список дял проверки массивов писателей
-        //static List<string[]> ResultWri = new List<string[]>();
-        //список для проверки массивов читателей
-        //static List<List<string>> ResultRea = new List<List<string>>();
        
         static void Main()
         {
-            Message Serial = new Message(1000000, true, false);
+            Message freeAccess = new Message(1000, true, false);
             DateTime dt1, dt2;
-            int R = 2; // Параметр N - число писателей
-            int W = 2; // Параметр M - число читателей
-            Thread[] Writers = new Thread[W];
+            int R = 2, W = 2;
             Thread[] Readers = new Thread[R];
+            Thread[] Writers = new Thread[W];
             dt1 = DateTime.Now;
             for (int i = 0; i < W; i++)
             {
-                Writers[i] = new Thread(new ThreadStart(Serial.Write));
+                Writers[i] = new Thread(new ThreadStart(freeAccess.Write));
                 Writers[i].Start();
             }
             for (int i = 0; i < R; i++)
             {
-                Readers[i] = new Thread(new ThreadStart(Serial.Read));
+                Readers[i] = new Thread(new ThreadStart(freeAccess.Read));
                 Readers[i].Start();
             }
             for (int i = 0; i < W; i++)
                 Writers[i].Join();
-            Serial.SetFinish(true);//завершаем работу читателей
+            freeAccess.SetFinish(true);//завершаем работу читателей
             for (int i = 0; i < R; i++)
                 Readers[i].Join();
             dt2 = DateTime.Now;
             Console.WriteLine((dt2 - dt1).TotalMilliseconds);
-            /*         
-                      int cnt = 0;
-                      for (int i = 0; i < ResultWri.Count; i++)
-                      {
-                              cnt += ResultWri[i].GetLength(0);
-                      }
-                      Console.WriteLine("Всего сообщений отправлено:{0}", cnt);
-                      cnt = 0;
-                      for (int i = 0; i < ResultRea.Count; i++)
-                      {
-                          if (ResultRea[i] != null)
-                              cnt+= ResultRea[i].Count;
 
-                      }
-                      Console.WriteLine("Получено сообщений: {0}",cnt);*/
-            Console.ReadKey();
+            int cnt = 0;
+            for (int i = 0; i < freeAccess.ResultWri.Count; i++)
+            {
+                cnt += freeAccess.ResultWri[i].GetLength(0);
+            }
+            Console.WriteLine("Всего сообщений отправлено:{0}", cnt);
+            cnt = 0;
+            for (int i = 0; i < freeAccess.ResultRea.Count; i++)
+            {
+                if (freeAccess.ResultRea[i] != null)
+                    cnt += freeAccess.ResultRea[i].Count;
+
+            }
+            Console.WriteLine("Получено сообщений: {0}", cnt);
         }
     }
 }
