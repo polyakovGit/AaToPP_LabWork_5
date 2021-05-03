@@ -192,23 +192,6 @@ namespace Lab3
             varAccess.SetFinish(true);//завершаем работу читателей
             for (int i = 0; i < R; i++)
                 Readers[i].Join();
-
-            //ssEmpty = new SemaphoreSlim(1);//только один запрос может выполняться одновременно
-            //for (int i = 0; i < W; i++)
-            //{
-            //    Writers[i] = new Thread(Write);
-            //    Writers[i].Start(ssEmpty);
-            //}
-            //for (int i = 0; i < R; i++)
-            //{
-            //    Readers[i] = new Thread(Read);
-            //    Readers[i].Start(ssEmpty);
-            //}
-            //for (int i = 0; i < W; i++)
-            //    Writers[i].Join();
-            //finish = true;//завершаем работу читателей
-            //for (int i = 0; i < R; i++)
-            //    Readers[i].Join();
             ShowMessages(varAccess);
         }
         static void ReadWriteLockAccess(Message varAccess)
@@ -323,7 +306,7 @@ namespace Lab3
 
             Message semaphoreAccess = new Message(n);
             dt1 = DateTime.Now;
-            ReadWriteSignalAccess(semaphoreAccess);
+            ReadWriteSemaphoreAccess(semaphoreAccess);
             dt2 = DateTime.Now;
             Console.WriteLine((dt2 - dt1).TotalMilliseconds);
 
